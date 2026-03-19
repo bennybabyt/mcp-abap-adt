@@ -17,7 +17,7 @@
   },  
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mario-andreschak/mcp-abap-adt.git"
+    "url": "git+https://github.com/bennybabyt/mcp-abap-adt.git"
   },  
   "devDependencies": {
     "@types/jest": "^29.5.14",
