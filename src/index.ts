@@ -24,6 +24,7 @@ import { handleGetTypeInfo } from './handlers/handleGetTypeInfo';
 import { handleGetInterface } from './handlers/handleGetInterface';
 import { handleGetTransaction } from './handlers/handleGetTransaction';
 import { handleSearchObject } from './handlers/handleSearchObject';
+import { handleListPackage } from './handlers/handleListPackage';
 
 // Import shared utility functions and types
 import { getBaseUrl, getAuthHeaders, createAxiosInstance, makeAdtRequest, return_error, return_response } from './lib/utils';
@@ -223,6 +224,25 @@ export class mcp_abap_adt_server {
             }
           },
           {
+            name: 'ListPackage',
+            description: 'Search for ABAP packages and list them',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                search_term: {
+                  type: 'string',
+                  description: 'Package name search pattern (use * wildcard for partial match, defaults to * for all packages)'
+                },
+                max_results: {
+                  type: 'number',
+                  description: 'Maximum number of results to return',
+                  default: 100
+                }
+              },
+              required: []
+            }
+          },
+          {
             name: 'GetTypeInfo',
             description: 'Retrieve ABAP type information',
             inputSchema: {
@@ -320,6 +340,8 @@ export class mcp_abap_adt_server {
           return await handleGetTableContents(request.params.arguments);
         case 'GetPackage':
           return await handleGetPackage(request.params.arguments);
+        case 'ListPackage':
+          return await handleListPackage(request.params.arguments);
         case 'GetTypeInfo':
           return await handleGetTypeInfo(request.params.arguments);
         case 'GetInclude':
