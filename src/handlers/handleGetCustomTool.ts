@@ -3,14 +3,12 @@ import { makeAdtRequest, return_error, return_response, getBaseUrl } from '../li
 
 export async function handleGetCustomTool(args: any) {
     try {
-        if (!args?.tool) {
-            throw new McpError(ErrorCode.InvalidParams, 'Tool is required');
+        if (!args?.name) {
+            throw new McpError(ErrorCode.InvalidParams, 'Name is required');
         }
-        if (!args?.query) {
-            throw new McpError(ErrorCode.InvalidParams, 'Query is required');
-        }
-        const encodedTool = encodeURIComponent(args.tool);
-        const url = `${await getBaseUrl()}/z_mcp_abap_adt/getfrom/${encodedTool}?${args.query}`;
+        const encodedName = encodeURIComponent(args.name);
+        const queryString = args.arguments ? new URLSearchParams(args.arguments).toString() : '';
+        const url = `${await getBaseUrl()}/z_mcp_abap_adt/getfrom/${encodedName}?${queryString}`;
         const response = await makeAdtRequest(url, 'GET', 30000);
                 if (response.data) {
             response.data = JSON.stringify(response.data);

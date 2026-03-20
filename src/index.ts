@@ -3,9 +3,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
-  ErrorCode,
   ListToolsRequestSchema,
-  McpError,
 } from '@modelcontextprotocol/sdk/types.js';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -29,7 +27,7 @@ import { handleGetCustomTool } from './handlers/handleGetCustomTool';
 import { handleListCustomTools } from './handlers/handleListCustomTools';
 
 // Import shared utility functions and types
-import { getBaseUrl, getAuthHeaders, createAxiosInstance, makeAdtRequest, return_error, return_response } from './lib/utils';
+import { getBaseUrl, makeAdtRequest } from './lib/utils';
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -64,6 +62,17 @@ export function getConfig(): SapConfig {
   }
 
   return { url, username, password, client };
+}
+
+async function getDynamicTools(): Promise<any[]> {
+  try {
+    const url = `${await getBaseUrl()}/z_mcp_abap_adt/listCustomTools`;
+    const response = await makeAdtRequest(url, 'GET', 30000);
+    const parsed = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+    return Array.isArray(parsed.tools) ? parsed.tools : [];
+  } catch {
+    return [];
+  }
 }
 
 /**
@@ -102,6 +111,7 @@ export class mcp_abap_adt_server {
 
     // Handler for ListToolsRequest
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+      const dynamicTools = await getDynamicTools();
       return {
         tools: [ // Define available tools
           {
@@ -212,32 +222,6 @@ export class mcp_abap_adt_server {
             }
           },
           {
-            name: 'GetCustomTool',
-            description: 'Get related informations from the custom tool, more info in listCustomTools',
-            inputSchema: {
-              type: 'object',
-              properties: {
-                tool: {
-                  type: 'string',
-                  description: 'Name of the custom tool'
-                },
-                query: {
-                  type: 'string',
-                  description: 'Query string parameters'
-                }
-              },
-              required: ['tool', 'query']
-            }
-          },
-          {
-            name: 'ListCustomTools',
-            description: 'List available custom tools',
-            inputSchema: {
-              type: 'object',
-              properties: {}
-            }
-          },
-          {
             name: 'GetPackage',
             description: 'Retrieve ABAP package details',
             inputSchema: {
@@ -344,7 +328,8 @@ export class mcp_abap_adt_server {
               },
               required: ['interface_name']
             }
-          }
+          },
+          ...dynamicTools
         ]
       };
     });
@@ -385,10 +370,7 @@ export class mcp_abap_adt_server {
         case 'GetTransaction':
           return await handleGetTransaction(request.params.arguments);
         default:
-          throw new McpError(
-            ErrorCode.MethodNotFound,
-            `Unknown tool: ${request.params.name}`
-          );
+          return await handleGetCustomTool({ name: request.params.name, arguments: request.params.arguments });
       }
     });
 
