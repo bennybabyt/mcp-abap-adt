@@ -7,6 +7,8 @@ import { handleGetFunction } from './handlers/handleGetFunction';
 import { handleGetTable } from './handlers/handleGetTable';
 import { handleGetStructure } from './handlers/handleGetStructure';
 import { handleGetTableContents } from './handlers/handleGetTableContents';
+import { handleGetCustomTool } from './handlers/handleGetCustomTool';
+import { handleListCustomTools } from './handlers/handleListCustomTools';
 import { handleGetPackage } from './handlers/handleGetPackage';
 import { handleGetInclude } from './handlers/handleGetInclude';
 import { handleGetTypeInfo } from './handlers/handleGetTypeInfo';
@@ -144,6 +146,26 @@ describe('mcp_abap_adt_server - Integration Tests', () => {
     it('should successfully retrieve transaction details', async () => {
       const result = await handleGetTransaction({ transaction_name: 'SE93' });
       console.log(result)
+      expect(result.isError).toBe(false);
+      expect(Array.isArray(result.content)).toBe(true);
+      expect(result.content.length).toBeGreaterThan(0);
+      expect(result.content[0].type).toBe('text');
+    });
+  });
+
+  describe('handleGetCustomTool', () => {
+    it('should successfully retrieve info', async () => {
+      const result = await handleGetCustomTool({ report: 'Z_SOME_REPORT', query: 'param=value' });
+      expect(result.isError).toBe(false);
+      expect(Array.isArray(result.content)).toBe(true);
+      expect(result.content.length).toBeGreaterThan(0);
+      expect(result.content[0].type).toBe('text');
+    });
+  });
+
+  describe('handleListCustomTools', () => {
+    it('should successfully list custom tools', async () => {
+      const result = await handleListCustomTools();
       expect(result.isError).toBe(false);
       expect(Array.isArray(result.content)).toBe(true);
       expect(result.content.length).toBeGreaterThan(0);

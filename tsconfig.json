@@ -13,6 +13,7 @@
       "./node_modules/@modelcontextprotocol/sdk/types"
     ],
     "outDir": "./dist",
+    "sourceMap": true,
     "noImplicitAny": false
   },
   "include": ["src/**/*"],

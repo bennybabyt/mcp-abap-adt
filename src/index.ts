@@ -25,6 +25,8 @@ import { handleGetInterface } from './handlers/handleGetInterface';
 import { handleGetTransaction } from './handlers/handleGetTransaction';
 import { handleSearchObject } from './handlers/handleSearchObject';
 import { handleListPackage } from './handlers/handleListPackage';
+import { handleGetCustomTool } from './handlers/handleGetCustomTool';
+import { handleListCustomTools } from './handlers/handleListCustomTools';
 
 // Import shared utility functions and types
 import { getBaseUrl, getAuthHeaders, createAxiosInstance, makeAdtRequest, return_error, return_response } from './lib/utils';
@@ -210,6 +212,32 @@ export class mcp_abap_adt_server {
             }
           },
           {
+            name: 'GetCustomTool',
+            description: 'Get related informations from the custom tool, more info in listCustomTools',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                report: {
+                  type: 'string',
+                  description: 'Name of the custom tool'
+                },
+                query: {
+                  type: 'string',
+                  description: 'Query string parameters'
+                }
+              },
+              required: ['report', 'query']
+            }
+          },
+          {
+            name: 'ListCustomTools',
+            description: 'List available custom tools',
+            inputSchema: {
+              type: 'object',
+              properties: {}
+            }
+          },
+          {
             name: 'GetPackage',
             description: 'Retrieve ABAP package details',
             inputSchema: {
@@ -338,6 +366,10 @@ export class mcp_abap_adt_server {
           return await handleGetTable(request.params.arguments);
         case 'GetTableContents':
           return await handleGetTableContents(request.params.arguments);
+        case 'GetCustomTool':
+          return await handleGetCustomTool(request.params.arguments);
+        case 'ListCustomTools':
+          return await handleListCustomTools();
         case 'GetPackage':
           return await handleGetPackage(request.params.arguments);
         case 'ListPackage':
