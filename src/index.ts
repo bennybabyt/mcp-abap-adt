@@ -217,7 +217,7 @@ export class mcp_abap_adt_server {
             inputSchema: {
               type: 'object',
               properties: {
-                report: {
+                tool: {
                   type: 'string',
                   description: 'Name of the custom tool'
                 },
@@ -226,7 +226,7 @@ export class mcp_abap_adt_server {
                   description: 'Query string parameters'
                 }
               },
-              required: ['report', 'query']
+              required: ['tool', 'query']
             }
           },
           {

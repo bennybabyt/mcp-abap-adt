@@ -155,7 +155,7 @@ describe('mcp_abap_adt_server - Integration Tests', () => {
 
   describe('handleGetCustomTool', () => {
     it('should successfully retrieve info', async () => {
-      const result = await handleGetCustomTool({ report: 'Z_SOME_REPORT', query: 'param=value' });
+      const result = await handleGetCustomTool({ tool: 'Z_SOME_REPORT', query: 'param=value' });
       expect(result.isError).toBe(false);
       expect(Array.isArray(result.content)).toBe(true);
       expect(result.content.length).toBeGreaterThan(0);
